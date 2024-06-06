@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Application Chrono</title>
+	<link rel="icon" type="image/x-icon" href="favicon.ico">
+	<meta charset="UTF-8">
+	<link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+	<style>
+		.container {
+			width: 300px;
+			margin: 40px auto;
+			text-align: center;
+		}
+		.timer {
+			font-size: 48px;
+			font-weight: bold;
+			margin-bottom: 20px;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="timer" id="timer">00:00:00</div>
+		<div class="buttons">
+			<button id="start-btn">Démarrer</button>
+			<button id="stop-btn" disabled>Arrêter</button>
+		</div>
+		<table id="laps-table">
+			<thead>
+				<tr>
+					<th>Heure de départ</th>
+					<th>Heure d'arrêt</th>
+					<th>Temps écoulé</th>
+				</tr>
+			</thead>
+			<tbody id="laps-body">
+			</tbody>
+		</table>
+		<button id="reset-btn">Réinitialiser le tableau</button>
+	</div>
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script>
+		let startTime;
+		let endTime;
+		let timerId;
+		let isRunning = false;
+		let lapsTableHTML = localStorage.getItem('lapsTableHTML');
+
+		$(document).ready(function() {
+			$('#start-btn').on('click', startTimer);
+			$('#stop-btn').on('click', stopTimer);
+            $('#reset-btn').on('click', resetTable);
+			if (lapsTableHTML) {
+				$('#laps-body').html(lapsTableHTML);
+			}
+		});
+
+		function startTimer() {
+			startTime = new Date().getTime();
+			timerId = setInterval(updateTimer, 1000);
+			$('#start-btn').prop('disabled', true);
+			$('#stop-btn').prop('disabled', false);
+			isRunning = true;
+            updateTimer();
+		}
+
+		function stopTimer() {
+			endTime = new Date().getTime();
+			clearInterval(timerId);
+			$('#start-btn').prop('disabled', false);
+			$('#stop-btn').prop('disabled', true);
+			isRunning = false;
+            updateTimer();
+			addLapToTable();
+		}
+
+		function updateTimer() {
+			let now = new Date().getTime();
+			let elapsed = now - startTime;
+			$('#timer').text(msToTime(elapsed));
+		}
+
+		function pad(num) {
+			return (num < 10 ? '0' : '') + num;
+		}
+
+		function addLapToTable() {
+			let lapStartTime = new Date(startTime).toLocaleTimeString();
+			let lapEndTime = new Date(endTime).toLocaleTimeString();
+			let lapElapsed = msToTime(endTime - startTime);
+			$('#laps-body').append(`
+				<tr>
+					<td>${lapStartTime}</td>
+					<td>${lapEndTime}</td>
+					<td>${lapElapsed}</td>
+				</tr>
+			`);
+			localStorage.setItem('lapsTableHTML', $('#laps-body').html());
+		}
+
+        function resetTable() {
+            let ok = confirm('Êtes-vous sûr de vouloir réinitialiser le tableau?');
+			ok = ok && confirm('Êtes-vous *VRAIMENT* sûr de vouloir réinitialiser le tableau?');
+			if (ok) {
+                time = new Date().toISOString();
+                localStorage.setItem('lapsTableHTML-history-'+time, $('#laps-body').html());
+                console.log("lapsTableHTML-history-"+time);
+                $('#laps-body').empty();
+                localStorage.removeItem('lapsTableHTML');
+            }
+        }
+
+		function msToTime(ms) {
+			let hours = Math.floor(ms / 3600000);
+			let minutes = Math.floor((ms % 3600000) / 60000);
+			let seconds = Math.floor((ms % 60000) / 1000);
+			return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+		}
+	</script>
+</body>
+</html>
