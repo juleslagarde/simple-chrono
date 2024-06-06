@@ -5,8 +5,8 @@
 	<link rel="icon" type="image/x-icon" href="favicon.ico">
 	<meta charset="UTF-8">
 	<link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
-    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+	<link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
 	<style>
 		.container {
 			width: 300px;
@@ -52,7 +52,7 @@
 		$(document).ready(function() {
 			$('#start-btn').on('click', startTimer);
 			$('#stop-btn').on('click', stopTimer);
-            $('#reset-btn').on('click', resetTable);
+			$('#reset-btn').on('click', resetTable);
 			if (lapsTableHTML) {
 				$('#laps-body').html(lapsTableHTML);
 			}
@@ -64,7 +64,7 @@
 			$('#start-btn').prop('disabled', true);
 			$('#stop-btn').prop('disabled', false);
 			isRunning = true;
-            updateTimer();
+			updateTimer();
 		}
 
 		function stopTimer() {
@@ -73,7 +73,7 @@
 			$('#start-btn').prop('disabled', false);
 			$('#stop-btn').prop('disabled', true);
 			isRunning = false;
-            updateTimer();
+			updateTimer();
 			addLapToTable();
 		}
 
@@ -101,17 +101,17 @@
 			localStorage.setItem('lapsTableHTML', $('#laps-body').html());
 		}
 
-        function resetTable() {
-            let ok = confirm('Êtes-vous sûr de vouloir réinitialiser le tableau?');
+		function resetTable() {
+			let ok = confirm('Êtes-vous sûr de vouloir réinitialiser le tableau?');
 			ok = ok && confirm('Êtes-vous *VRAIMENT* sûr de vouloir réinitialiser le tableau?');
 			if (ok) {
-                time = new Date().toISOString();
-                localStorage.setItem('lapsTableHTML-history-'+time, $('#laps-body').html());
-                console.log("lapsTableHTML-history-"+time);
-                $('#laps-body').empty();
-                localStorage.removeItem('lapsTableHTML');
-            }
-        }
+				time = new Date().toISOString();
+				localStorage.setItem('lapsTableHTML-history-'+time, $('#laps-body').html());
+				console.log("lapsTableHTML-history-"+time);
+				$('#laps-body').empty();
+				localStorage.removeItem('lapsTableHTML');
+			}
+		}
 
 		function msToTime(ms) {
 			let hours = Math.floor(ms / 3600000);
